@@ -1,12 +1,7 @@
-# Orbital Mechanics MATLAB Project
+# Orbital Mechanics — Group 2602
 
-Open `matlab.toml` as a Project in MATLAB R2026b. The Project adds the student code folders to the path and exposes the two assignment scripts and two baseline checks as shortcuts. Each entry script or check loads the course dependencies when run.
+Open `om.prj` in MATLAB after cloning. The project adds both assignment folders and their `functions/` folders to the MATLAB path using repository-relative paths.
 
-`Code/` follows the course submission structure. See [the code README](Code/README.md) for instructions and current status. The local `course/` bundle and generated `results/` are ignored by Git. Teammates cloning the repository can obtain their own official WeBeep bundle and follow the setup instructions.
+See [Code/README.md](Code/README.md) for the assignment entry scripts and how to load an external copy of the official WeBeep files.
 
-Development order
-
-1. Run **Mars Express** to verify the fixed-time Lambert leg.
-2. Extend the direct date grid for Chapter 3, then build the powered-flyby evaluator and search for Assignment 1.
-3. Run **Planetary baseline** to verify the two-body and ground-track helpers.
-4. Add the group's assigned perturbation model and the Cartesian/Gauss comparison for Assignment 2.
+The repository tracks the MATLAB project definition and student code. The WeBeep files live outside the checkout. The `results/` directory is reserved for local generated outputs.
