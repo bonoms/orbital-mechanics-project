@@ -1,0 +1,7 @@
+/course/
+/results/
+.DS_Store
+*.asv
+*.m~
+*.slxc
+slprj/

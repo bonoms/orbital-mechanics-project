@@ -1,0 +1,23 @@
+name = "Orbital Mechanics"
+
+[folders]
+path = [
+    "Code",
+    "Code/Assignment1",
+    "Code/Assignment1/functions",
+    "Code/Assignment1/functions/shared",
+    "Code/Assignment2",
+    "Code/Assignment2/functions",
+    "checks",
+]
+
+[project]
+summary = "Development and submission code for the two orbital mechanics assignments"
+
+[project.shortcuts."Assignments"]
+"Assignment 1" = {path = "Code/Assignment1/InterplanetaryMission_group_N.m"}
+"Assignment 2" = {path = "Code/Assignment2/PlanetaryMission_group_N.m"}
+
+[project.shortcuts."Checks"]
+"Mars Express" = {path = "checks/checkMarsExpress.m"}
+"Planetary baseline" = {path = "checks/checkPlanetaryBaseline.m"}
