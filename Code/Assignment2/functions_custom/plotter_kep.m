@@ -1,7 +1,10 @@
-function plotter_kep(mjd2000s, ephemerides, names, PLANET, OPTIONS)
+function plotter_kep(ephemerides, names, PLANET, OPTIONS)
 
-    [n_states, ~, n] = size(ephemerides);
+    n = size(ephemerides, 2);
     colors = lines(n);
+
+    n_states = 1000;
+    mjd2000s = linspace(ephemerides(1).x(1), ephemerides(1).x(end), n_states);
     days = mjd2000s - mjd2000s(1);
 
     labels = {'Semi-Major Axis [km]', 'Eccentricity', 'Inclination [deg]', ...
@@ -23,15 +26,15 @@ function plotter_kep(mjd2000s, ephemerides, names, PLANET, OPTIONS)
     kep_all = zeros(n_states, 6, n);
 
     for k = 1:n
-        kep = cell2mat(arrayfun(@(row) car2kep(ephemerides(row, :, k), PLANET.mu), ...
-              (1:n_states)', 'UniformOutput', false));
+        kep = cell2mat(arrayfun(@(mjd2000) car2kep(deval(ephemerides(k), mjd2000), PLANET.mu), ...
+              mjd2000s(:), 'UniformOutput', false));
 
         kep(:, 3:6) = rad2deg(kep(:, 3:6));
         kep_all(:, :, k) = kep;
 
-        for idx = 1:6
-            plot(ax(idx), days, kep(:, idx), 'Color', colors(k, :), ...
-                 'DisplayName', names{k}, 'LineWidth', 1.2);
+        for i = 1:6
+            plot(ax(i), days, kep(:, i), 'Color', colors(k, :), ...
+                 'DisplayName', names(k), 'LineWidth', 1.2);
         end
     end
 
@@ -50,7 +53,7 @@ function plotter_kep(mjd2000s, ephemerides, names, PLANET, OPTIONS)
 
         figure;
         tl_rel = tiledlayout(2, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
-        title(tl_rel, sprintf('Difference: [%s] - [%s]', names{i1}, names{i2}));
+        title(tl_rel, sprintf('Difference: [%s] - [%s]', names(i1), names(i2)));
 
         for idx = 1:6
             ax_rel = nexttile(tl_rel);

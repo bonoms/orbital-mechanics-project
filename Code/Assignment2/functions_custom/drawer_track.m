@@ -1,4 +1,4 @@
-function drawer_track(mjd2000s, ephemerides, names, PLANET, OPTIONS)
+function drawer_track(ephemerides, names, PLANET, OPTIONS)
 
     figure;
     title('Ground Tracks');
@@ -7,10 +7,10 @@ function drawer_track(mjd2000s, ephemerides, names, PLANET, OPTIONS)
 
     image([-180 180], [-90 90], flipud(imread(PLANET.texture_name)));
 
-    n = size(ephemerides, 3);
+    n = size(ephemerides, 2);
     colors = lines(n);
     for k = 1:n
-        TRACK = ground_track(mjd2000s, ephemerides(:, :, k), names(k), PLANET);
+        TRACK = ground_track(ephemerides(k), names(k), PLANET);
         c = colors(k, :);
 
         plot(TRACK.lon_deg, TRACK.lat_deg, '-', 'Color', c, 'LineWidth', 2, 'DisplayName', TRACK.name);
@@ -41,13 +41,13 @@ function drawer_track(mjd2000s, ephemerides, names, PLANET, OPTIONS)
 
 end
 
-function TRACK = ground_track(mjd2000s, ephemeris, name, PLANET)
+function TRACK = ground_track(ephemeris, name, PLANET)
 
-    r = ephemeris(:, 1:3);
+    r = ephemeris.y(1:3, :);
 
-    alpha = atan2(r(:, 2), r(:, 1));
-    delta = pi / 2 - acos(r(:, 3) ./ vecnorm(r, 2, 2));
-    lon = alpha - (PLANET.omega * mjd2000s(:) * 86400);
+    alpha = atan2(r(2, :), r(1, :));
+    delta = pi / 2 - acos(r(3, :) ./ vecnorm(r, 2, 1));
+    lon = alpha - (PLANET.omega * ephemeris.x * 86400);
     lat = delta;
 
     lon_deg = wrapTo180(rad2deg(lon));
@@ -56,8 +56,8 @@ function TRACK = ground_track(mjd2000s, ephemeris, name, PLANET)
     wrap_idx = find(abs(diff(lon_deg)) > 180);
     for i = length(wrap_idx):-1:1
         idx = wrap_idx(i);
-        lon_deg = [lon_deg(1:idx); NaN; lon_deg(idx + 1:end)];
-        lat_deg = [lat_deg(1:idx); NaN; lat_deg(idx + 1:end)];
+        lon_deg = [lon_deg(1:idx) NaN lon_deg(idx + 1:end)];
+        lat_deg = [lat_deg(1:idx) NaN lat_deg(idx + 1:end)];
     end
 
     TRACK.name = name;

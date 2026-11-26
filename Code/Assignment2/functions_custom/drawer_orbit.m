@@ -1,4 +1,4 @@
-function drawer_orbit(mjd2000s, ephemerides, names, PLANET, OPTIONS)
+function drawer_orbit(ephemerides, names, PLANET, OPTIONS)
 
     [X_planet, Y_planet, Z_planet] = ellipsoid(0, 0, 0, PLANET.R_eq, PLANET.R_eq, PLANET.R_p);
     texture = flipud(imread(PLANET.texture_name));
@@ -13,16 +13,16 @@ function drawer_orbit(mjd2000s, ephemerides, names, PLANET, OPTIONS)
         'HandleVisibility', 'off');
 
 
-    n = size(ephemerides, 3);
+    n = size(ephemerides, 2);
     colors = lines(n);
     for k = 1:n
-        ephemeris = ephemerides(:, :, k);
-        plot3(ephemeris(:, 1), ephemeris(:, 2), ephemeris(:, 3), '-', 'LineWidth', 2.5, ...
-              'Color', colors(k, :), 'DisplayName', names(k));
+        ephemeris = ephemerides(k);
+        plot3(ephemeris.y(1, :), ephemeris.y(2, :), ephemeris.y(3, :), ...
+        '-', 'LineWidth', 2.5, 'Color', colors(k, :), 'DisplayName', names(k));
     end
 
     if OPTIONS.draw_sun_direction
-        r_sun = sun_position(mjd2000s(1), PLANET);
+        r_sun = sun_position(ephemerides(1).x(1), PLANET);
         dir_sun = r_sun / norm(r_sun);
 
         scale = PLANET.R_mean * 25;
@@ -40,7 +40,7 @@ function drawer_orbit(mjd2000s, ephemerides, names, PLANET, OPTIONS)
     axis equal;
     grid on;
 
-    max_val = max(abs(ephemerides(:, 1:3, :)), [], 'all') * 1.1; 
+    max_val = max(arrayfun(@(s) max(abs(s.y(1:3, :)), [], 'all'), ephemerides)) * 1.1;
     xlim([-max_val max_val]);
     ylim([-max_val max_val]);
     zlim([-max_val max_val]);

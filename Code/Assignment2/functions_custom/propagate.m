@@ -1,11 +1,11 @@
-function [states] = propagate(state0, mjd2000s, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS)
+function ephemeris = propagate(state0, mjd2000s, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS)
 
     if DATA_OPTIONS.is_input_kep
         state0 = kep2car(state0, PLANET.mu);
     end
 
     integrator_options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
-    [~, states] = ode113(@(t, y) rhs(t, y, PLANET, PROPERTIES, PROPAGATOR_OPTIONS), mjd2000s, state0, integrator_options);
+    ephemeris = ode113(@(t, y) rhs(t, y, PLANET, PROPERTIES, PROPAGATOR_OPTIONS), mjd2000s, state0, integrator_options);
 
 end
 
