@@ -14,4 +14,7 @@ function PLANET = planetary_data(planet_id)
     PLANET.R_p = PLANET.R_mean * (1 - PLANET.f)^(2 / 3);
     PLANET.omega = 2 * pi / PLANET.P_sidereal;
 
+    textures = ["", "VenusTexture.jpg", "EarthTexture.jpg"];
+    PLANET.texture_name = textures(planet_id);
+
 end

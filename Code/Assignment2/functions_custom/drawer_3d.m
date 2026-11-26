@@ -1,16 +1,14 @@
-function orbit_drawer(mjd2000s, states, PLANET, OPTIONS)
-
-    textures = ["", "VenusTexture.jpg", "EarthTexture.jpg"];
+function drawer_3d(mjd2000s, states, PLANET, OPTIONS)
 
     [X_planet, Y_planet, Z_planet] = ellipsoid(0, 0, 0, PLANET.R_eq, PLANET.R_eq, PLANET.R_p);
-    planet_texture = imread(textures(PLANET.id));
+    texture = flipud(imread(PLANET.texture_name));
 
     figure();
     hold on;
 
     if OPTIONS.draw_planet
-        surf(X_planet, Y_planet, -Z_planet, ...
-            'FaceColor', 'texturemap', 'CData', planet_texture, 'EdgeColor', 'none', 'FaceAlpha', 1);
+        surf(X_planet, Y_planet, Z_planet, ...
+            'FaceColor', 'texturemap', 'CData', texture, 'EdgeColor', 'none', 'FaceAlpha', 1);
     end
 
     if OPTIONS.draw_orbit
@@ -31,16 +29,18 @@ function orbit_drawer(mjd2000s, states, PLANET, OPTIONS)
     end
 
     hold off;
-    xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
     set(gca, 'FontSize', 14);
+
+    axis equal;
+    grid on;
 
     max_val = max(abs(states(:, 1:3)), [], 'all') * 1.1; 
     xlim([-max_val, max_val]);
     ylim([-max_val, max_val]);
     zlim([-max_val, max_val]);
 
-    axis equal;
-    grid on;
+    xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
+
     view(3);
 
 end
