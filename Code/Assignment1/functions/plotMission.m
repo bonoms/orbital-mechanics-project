@@ -1,9 +1,9 @@
-function ax = plotMission(mission)
+function plotMission(mission)
 %PLOTMISSION Plot the body orbits and the two heliocentric transfer arcs.
 % Usage: ax = plotMission(mission, tDep, tEnc, tArr).
 % Inputs: mission [scalar struct] from legAssembler; tDep, tEnc, tArr
 %         [scalar, MJD2000 days] are the dates passed to legAssembler.
-% Output: ax [scalar axes handle]. Positions are displayed in AU.
+% Output: none
 % Authors: [Group member names]
 
 
@@ -60,13 +60,10 @@ for k = 1:numel(sampleDates)
     orbit(k,:) = sample.r(:).' / auKm;
 end
 
-curve = plot3(ax, orbit(:,1), orbit(:,2), orbit(:,3), '--', ...
-    'DisplayName', name);
+curve = plot3(ax, orbit(:,1), orbit(:,2), orbit(:,3), '--', 'DisplayName', name);
 
 point = state.r(:) / auKm;
-plot3(ax, point(1), point(2), point(3), 'o', ...
-    'Color', curve.Color, 'MarkerFaceColor', curve.Color, ...
-    'HandleVisibility', 'off');
+plot3(ax, point(1), point(2), point(3), 'o', 'Color', curve.Color, 'MarkerFaceColor', curve.Color);
 end
 
 function plotTransferArc(ax, r0, v0, tofSec, name, fun, opts, auKm)

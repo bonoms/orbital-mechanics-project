@@ -6,10 +6,15 @@
 
 
 % Example dates in MJD2000 for testing the plot.
-tDep = 100;
-tEnc = 190;
-tArr = 250;
+% convention used, relative time is in seconds also in teh other functionts
+%, but abosolute time is providedi in MJD2000; 
 
-[vtot, mission] = legAssembler(tDep, tEnc, tArr);
-plotMission(mission);
+
+tDep = 50;
+tEnc = 520;
+tArr = 1300;
+
+[dvMatrix, missionOptimal] = missionOptimizer(40, 60, 510, 520, 1290, 1310, 50, 50, 50);
+
+plotMission(missionOptimal);
 
