@@ -28,7 +28,7 @@ function [dv, mission] = legAssembler(tDep, tEnc, tArr)
 tOf1 = 86400*(tEnc-tDep);
 
 asteroid = bodyState('asteroid', tDep);
-mars = bodyState('mars', tDep+tOf1);
+mars = bodyState('mars', tEnc);
 
 [leg1] = legSolver(asteroid.r, mars.r, tOf1);
 
@@ -38,7 +38,7 @@ dv1 = norm(leg1.v1 - asteroid.v) + norm(leg1.v2 - mars.v) ;
 
 tOf2 = 86400*(tArr-tEnc);
 
-venus = bodyState('venus', tDep+tOf1+tOf2);
+venus = bodyState('venus', tArr);
 
 [leg2] = legSolver(mars.r, venus.r, tOf2);
 
@@ -51,11 +51,16 @@ dv = dv1 + dv2;
 % mission parameters
 
 mission.ok = ((leg1.error == 0) & (leg2.error == 0));
+
 mission.tOf1 = tOf1;
 mission.tOf2 = tOf2;
+
 mission.leg1 = leg1;
 mission.leg2 = leg2;
+
 mission.dv1 = dv1;
 mission.dv2 = dv2;
+
+mission.epochs = [tDep, tEnc, tArr];
 
 end
