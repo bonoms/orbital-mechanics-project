@@ -1,20 +1,14 @@
-%INTERPLANETARYMISSION_GROUP_2602 Entry script for Assignment 1.
-% Authors: .
-% Usage: Open om.prj and follow Code/README.md.
-% Inputs and outputs: document when the analysis is implemented.
+%INTERPLANETARYMISSION_GROUP_2602 Main script for the interplanetary mission analysis
+%
+% DESCRIPTION:
+% bla bla
+%
+% NOTE:
+% The example dates are expressed in MJD2000 days, while the transfer
+% computations inside the mission functions use relative time in seconds.
 
 
 
-% Example dates in MJD2000 for testing the plot.
-% convention used, relative time is in seconds also in teh other functionts
-%, but abosolute time is providedi in MJD2000; 
-
-
-tDep = 50;
-tEnc = 520;
-tArr = 1300;
-
-[dvMatrix, missionOptimal] = missionOptimizer(40, 60, 510, 520, 1290, 1310, 50, 50, 50);
+[dvMatrix, missionOptimal, dvOptimal] = missionOptimizer(40, 60, 510, 520, 1290, 1310, 50, 50, 50);
 
 plotMission(missionOptimal);
-

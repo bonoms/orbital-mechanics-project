@@ -51,12 +51,16 @@ dv = dv1 + dv2;
 % mission parameters
 
 mission.ok = ((leg1.error == 0) & (leg2.error == 0));
+
 mission.tOf1 = tOf1;
 mission.tOf2 = tOf2;
+
 mission.leg1 = leg1;
 mission.leg2 = leg2;
+
 mission.dv1 = dv1;
 mission.dv2 = dv2;
+
 mission.epochs = [tDep, tEnc, tArr];
 
 end
