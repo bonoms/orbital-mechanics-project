@@ -1,4 +1,5 @@
-function [r, v] = kep2car(kep, mu)
+function state = kep2car(kep, mu)
+
     sma = kep(1); ecc = kep(2); inc = kep(3);
     raan = kep(4); aop = kep(5); ta = kep(6);
 
@@ -23,4 +24,7 @@ function [r, v] = kep2car(kep, mu)
          c_i];
     r = P * rp;
     v = P * vp;
+
+    state = [r; v];
+    
 end

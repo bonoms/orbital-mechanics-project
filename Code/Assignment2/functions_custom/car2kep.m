@@ -1,45 +1,41 @@
-function [a, e, i, raan, aop, ta] = car2kep(r, v, mu)
-    eps = 1e-12;
+function kep = car2kep(state, mu)
+    
+    eps_tol = 1e-12;
+
+    r = state(1:3);
+    v = state(4:6);
 
     r_norm = norm(r);
     v_norm = norm(v);
-    v_r = dot(r, v) / r_norm;
 
     h = cross(r, v);
     h_norm = norm(h);
+    inc = atan2(norm(h(1:2)), h(3));
 
-    i = acos(h(3) / h_norm);
-
-    if (abs(i) > eps)
-        N = cross([0; 0; 1], h);
+    N = cross([0; 0; 1], h);
+    N_norm = norm(N);
+    if N_norm > eps_tol
         raan = atan2(N(2), N(1));
     else
         N = [1; 0; 0];
+        N_norm = 1;
         raan = 0;
     end
 
-    N_norm = norm(N);
-    e_vector = 1 / mu * (cross(v, h) - mu * r / r_norm);
-    e = norm(e_vector);
-
-    if (e > eps)
-        if (e_vector(3) >= 0)
-            aop = acos(dot(N, e_vector) / (N_norm * e));
-        else
-            aop = 2 * pi - acos(dot(N, e_vector) / (N_norm * e));
-        end
+    ecc_vec = cross(v, h) / mu - r / r_norm;
+    ecc = norm(ecc_vec);
+    if ecc > eps_tol
+        aop = atan2(dot(cross(N, ecc_vec), h) / h_norm, dot(N, ecc_vec));
     else
-        e_vector = [1; 0; 0];
-        e = 1;
+        ecc_vec = N / N_norm;
+        ecc = 0;
         aop = 0;
     end
 
-    if (v_r >= 0)
-        ta = acos(dot(e_vector, r) / (e * r_norm));
-    else
-        ta = 2 * pi - acos(dot(e_vector, r) / (e * r_norm));
-    end
+    ta = atan2(dot(cross(ecc_vec, r), h) / h_norm, dot(ecc_vec, r));
 
-    a = 1 / (2 / r_norm - v_norm^2 / mu);
+    sma = 1 / (2 / r_norm - v_norm^2 / mu);
+
+    kep = [sma, ecc, inc, raan, aop, ta];
 
 end

@@ -6,7 +6,7 @@
 clear;
 close all;
 clc;
-
+addpath(genpath("Code/Assignment2"))
 
 %% Initial Conditions
 
@@ -21,6 +21,8 @@ mjd2000_initial = date2mjd2000([2038 11 2 17 4 15]);
 
 planet_id = 2;
 PLANET = planetary_data(planet_id);
+
+kep2 = car2kep(kep2car(kep, PLANET.mu), PLANET.mu);
 
 
 %% Simulation Duration
@@ -38,29 +40,24 @@ DATA_OPTIONS.is_input_kep = true;
 
 PROPAGATOR_OPTIONS.use_J2 = false;
 PROPAGATOR_OPTIONS.use_SRP = false;
-
-states_2bp = propagate(kep, mjd2000s, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS);
+ephemeris_2bp = propagate(kep, mjd2000s, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS);
 
 PROPAGATOR_OPTIONS.use_J2 = true;
 PROPAGATOR_OPTIONS.use_SRP = true;
-
-states_pert = propagate(kep, mjd2000s, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS);
-
-
-%% Track Calculation
-
-TRACK_2BP = ground_track(mjd2000s, states_2bp, PLANET, "2BP");
-TRACK_PERT = ground_track(mjd2000s, states_pert, PLANET, "J2 + SRP");
-
-tracks = [TRACK_2BP, TRACK_PERT];
+ephemeris_pert = propagate(kep, mjd2000s, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS);
 
 
 %% Visualization
 
-DRAWER_3D_OPTIONS.draw_planet = true;
-DRAWER_3D_OPTIONS.draw_orbit = true;
-DRAWER_3D_OPTIONS.draw_sun_direction = true;
-DRAWER_2D_OPTIONS.draw_end_points = true;
+ephemerides = cat(3, ephemeris_2bp, ephemeris_pert);
+names = ["2BP" "J2 + SRP"];
 
-drawer_3d(mjd2000s, states_pert, PLANET, DRAWER_3D_OPTIONS);
-drawer_2d(tracks, PLANET, DRAWER_2D_OPTIONS);
+DRAWER_ORBIT_OPTIONS.draw_sun_direction = true;
+drawer_orbit(mjd2000s, ephemerides, names, PLANET, DRAWER_ORBIT_OPTIONS);
+
+DRAWER_TRACK_OPTIONS.draw_end_points = true;
+drawer_track(mjd2000s, ephemerides, names, PLANET, DRAWER_TRACK_OPTIONS);
+
+PLOTTER_KEP_OPTIONS.relative = [2 1];
+plotter_kep(mjd2000s, ephemerides, names, PLANET, PLOTTER_KEP_OPTIONS);
+

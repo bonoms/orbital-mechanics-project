@@ -1,8 +1,7 @@
 function [states] = propagate(state0, mjd2000s, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS)
 
     if DATA_OPTIONS.is_input_kep
-        [r, v] = kep2car(state0, PLANET.mu);
-        state0 = [r; v];
+        state0 = kep2car(state0, PLANET.mu);
     end
 
     integrator_options = odeset('RelTol', 1e-13, 'AbsTol', 1e-14);
@@ -45,16 +44,16 @@ function state_dot = rhs(mjd2000, state, PLANET, PROPERTIES, OPTIONS)
         r_sun_sc_norm = norm(r_sun_sc);
 
         % Directions to the center of Sun and planet
-        dir_Sun = -r_sun_sc / r_sun_sc_norm;
+        dir_sun = -r_sun_sc / r_sun_sc_norm;
         dir_planet = -r / r_norm;
 
         sun_size = asin(R_sun / r_sun_sc_norm);
         planet_size = asin(PLANET.R_mean / r_norm);
-        planet_sun_angle = acos(clip(dot(dir_planet, dir_Sun), -1, 1));
+        planet_sun_angle = acos(clip(dot(dir_planet, dir_sun), -1, 1));
 
-        nu = shadowFraction(planet_size, sun_size, planet_sun_angle);
+        nu = shadow_fraction(planet_size, sun_size, planet_sun_angle);
 
-        a_SRP = nu * PLANET.E_solar / c * PROPERTIES.cR * PROPERTIES.AM * (-dir_Sun) * 1e-3;
+        a_SRP = nu * PLANET.E_solar / c * PROPERTIES.cR * PROPERTIES.AM * (-dir_sun) * 1e-3;
         a_total = a_total + a_SRP;
     end
     
@@ -64,7 +63,7 @@ function state_dot = rhs(mjd2000, state, PLANET, PROPERTIES, OPTIONS)
     state_dot = state_dot * 86400;
 end
 
-function nu = shadowFraction(a, b, c)
+function nu = shadow_fraction(a, b, c)
     if c >= a + b
         nu = 1;
     elseif c <= a - b

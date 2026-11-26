@@ -1,18 +1,24 @@
-function drawer_3d(mjd2000s, states, PLANET, OPTIONS)
+function drawer_orbit(mjd2000s, ephemerides, names, PLANET, OPTIONS)
 
     [X_planet, Y_planet, Z_planet] = ellipsoid(0, 0, 0, PLANET.R_eq, PLANET.R_eq, PLANET.R_p);
     texture = flipud(imread(PLANET.texture_name));
 
-    figure();
+    figure;
+    title('Trajectories');
+
     hold on;
 
-    if OPTIONS.draw_planet
-        surf(X_planet, Y_planet, Z_planet, ...
-            'FaceColor', 'texturemap', 'CData', texture, 'EdgeColor', 'none', 'FaceAlpha', 1);
-    end
+    surf(X_planet, Y_planet, Z_planet, ...
+        'FaceColor', 'texturemap', 'CData', texture, 'EdgeColor', 'none', 'FaceAlpha', 1, ...
+        'HandleVisibility', 'off');
 
-    if OPTIONS.draw_orbit
-        plot3(states(:, 1), states(:, 2), states(:, 3), '-', 'LineWidth', 2.5);
+
+    n = size(ephemerides, 3);
+    colors = lines(n);
+    for k = 1:n
+        ephemeris = ephemerides(:, :, k);
+        plot3(ephemeris(:, 1), ephemeris(:, 2), ephemeris(:, 3), '-', 'LineWidth', 2.5, ...
+              'Color', colors(k, :), 'DisplayName', names(k));
     end
 
     if OPTIONS.draw_sun_direction
@@ -34,13 +40,14 @@ function drawer_3d(mjd2000s, states, PLANET, OPTIONS)
     axis equal;
     grid on;
 
-    max_val = max(abs(states(:, 1:3)), [], 'all') * 1.1; 
-    xlim([-max_val, max_val]);
-    ylim([-max_val, max_val]);
-    zlim([-max_val, max_val]);
+    max_val = max(abs(ephemerides(:, 1:3, :)), [], 'all') * 1.1; 
+    xlim([-max_val max_val]);
+    ylim([-max_val max_val]);
+    zlim([-max_val max_val]);
 
     xlabel('X [km]'); ylabel('Y [km]'); zlabel('Z [km]');
 
+    legend();
     view(3);
 
 end
