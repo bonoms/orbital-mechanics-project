@@ -25,7 +25,7 @@ arguments
     tOf (1,1) 
 end
 
-mu_sun = astroConstants(3);
+mu_sun = astroConstants(4);
 
 [A, P, E, ERROR, VI, VF, TPAR, THETA] = lambertMR(r1, r2, tOf, mu_sun, 0, 0, 0);
 
