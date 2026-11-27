@@ -22,28 +22,31 @@ mjd2000_initial = date2mjd2000([2038 11 2 17 4 15]);
 planet_id = 2;
 PLANET = planetary_data(planet_id);
 
-kep2 = car2kep(kep2car(kep, PLANET.mu), PLANET.mu);
-
-
-%% Simulation Duration
-
-P_kep = 2 * pi * sqrt(sma^3 / PLANET.mu);
-
-mjd2000_final = mjd2000_initial + P_kep * 50 / 86400;
-mjd2000s = [mjd2000_initial, mjd2000_final];
-
 
 %% Propagation
+
+mjd2000s_full = [mjd2000_initial, mjd2000_initial + 365];
 
 DATA_OPTIONS.is_input_kep = true;
 
 PROPAGATOR_OPTIONS.use_J2 = false;
 PROPAGATOR_OPTIONS.use_SRP = false;
-eph_2bp = propagate(kep, mjd2000s, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS);
+eph_2bp = propagate(kep, mjd2000s_full, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS);
 
 PROPAGATOR_OPTIONS.use_J2 = true;
 PROPAGATOR_OPTIONS.use_SRP = true;
-eph_pert = propagate(kep, mjd2000s, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS);
+eph_pert = propagate(kep, mjd2000s_full, PLANET, PROPERTIES, PROPAGATOR_OPTIONS, DATA_OPTIONS);
+
+
+%% Keplerian Elements
+
+step = 1;
+mjd2000s_step = mjd2000_initial:step:(mjd2000_initial + 365);
+
+kep_2bp = cell2mat(arrayfun(@(mjd2000) car2kep(deval(eph_2bp, mjd2000), PLANET.mu), ...
+             mjd2000s_step(:), 'UniformOutput', false));
+kep_pert = cell2mat(arrayfun(@(mjd2000) car2kep(deval(eph_pert, mjd2000), PLANET.mu), ...
+             mjd2000s_step(:), 'UniformOutput', false));
 
 
 %% Sensitivity Analysis
@@ -75,6 +78,21 @@ for i = 1:n_inc
 end
 
 
+%% Filtering
+
+step = 1;
+mjd2000s_step = mjd2000_initial:step:(mjd2000_initial + 365);
+
+kep_unfilt = cell2mat(arrayfun(@(mjd2000) car2kep(deval(eph_pert, mjd2000), PLANET.mu), ...
+             mjd2000s_step(:), 'UniformOutput', false));
+
+P_kep = 2 * pi * sqrt(sma^3 / PLANET.mu);
+k_filt_P = P_kep / step / 86400;
+
+kep_filt_1P = movmean(kep_unfilt, k_filt_P);  
+kep_filt_4P = movmean(kep_unfilt, k_filt_P * 4);    
+
+
 %% Visualization
 
 ephs = [eph_2bp, eph_pert];
@@ -86,8 +104,16 @@ drawer_orbit(ephs, names, PLANET, DRAWER_ORBIT_OPTIONS);
 DRAWER_TRACK_OPTIONS.draw_end_points = true;
 drawer_track(ephs, names, PLANET, DRAWER_TRACK_OPTIONS);
 
+keps = cat(3, kep_2bp, kep_pert);
+
 PLOTTER_KEP_OPTIONS.relative = [2 1];
-plotter_kep(ephs, names, PLANET, PLOTTER_KEP_OPTIONS);
+plotter_kep(mjd2000s_step, keps, names, PLANET, PLOTTER_KEP_OPTIONS);
 
 plotter_sens(smas, incs, decc, dinc);
+
+keps = cat(3, kep_pert, kep_filt_1P, kep_filt_4P);
+names = ["Unfiltered", "Filtered - k = 1 Period", "Filtered - k = 4 Periods"];
+
+PLOTTER_KEP_OPTIONS.relative = [];
+plotter_kep(mjd2000s_step, keps, names, PLANET, PLOTTER_KEP_OPTIONS);
 
