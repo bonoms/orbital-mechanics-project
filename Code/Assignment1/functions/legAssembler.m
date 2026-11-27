@@ -17,7 +17,7 @@ function [dv, mission] = legAssembler(tDep, tEnc, tArr)
 %
 % DESCRIPTION:
 % Computes the total delta-v for a two-leg interplanetary transfer by
-% solving two Lambert legs between the selected bodies at the specified
+% solving two Lambert legs between the selected bodies butat the specified
 % epochs and summing the velocity mismatches at departure, encounter, and
 % arrival. For future development: add the fly-by phase, with delta v and
 % sum it to the total, add also status in teh mission to evaluate
