@@ -1,4 +1,4 @@
-function [dvMatrix, missionOptimal, dvOptimal] = missionOptimizer(depDateMin, depDateMax, encDateMin, encDateMax, arrDateMin, arrDateMax, nDep, nEnc, nArr)
+function [dvMatrix, dvPork, missionOptimal, dvOptimal] = missionOptimizer(depDateMin, depDateMax, encDateMin, encDateMax, arrDateMin, arrDateMax, nDep, nEnc, nArr)
 %MISSIONOPTIMIZER Searches the transfer-epoch grid for the minimum delta-v mission
 %
 % PROTOTYPE:
@@ -39,7 +39,7 @@ depTimes = linspace(depDateMin, depDateMax, nDep);
 encTimes = linspace(encDateMin, encDateMax, nEnc);
 arrTimes = linspace(arrDateMin, arrDateMax, nArr);
 
-dvMatrix = nan(nDep, nEnc, nArr);
+dvMatrix = NaN*ones(nDep, nEnc, nArr);
 
 for i = 1:nDep
     for k = 1:nEnc
@@ -48,7 +48,7 @@ for i = 1:nDep
                 continue
             end
             [dv, mission] = legAssembler(depTimes(i), encTimes(k), arrTimes(l));
-            if mission.ok && isfinite(dv)
+            if mission.ok
                 dvMatrix(i, k, l) = dv;
             end
         end
@@ -59,5 +59,8 @@ end
 [idx1, idx2, idx3] = ind2sub(size(dvMatrix), idxOpt);
 
 [dvOptimal, missionOptimal] = legAssembler(depTimes(idx1), encTimes(idx2), arrTimes(idx3));
+
+
+dvPork = reshape(dvMatrix(:, idx2, :), nDep, nArr);
 
 end
