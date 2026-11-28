@@ -19,13 +19,10 @@ encDateMax = date2mjd2000([2060, 1, 1, 0, 0, 0]);
 arrDateMin = date2mjd2000([2030, 1, 1, 0, 0, 0]);
 arrDateMax = date2mjd2000([2060, 1, 1, 0, 0, 0]);
 
-tOfTotal = 2000; %maximum time of flight of the complete mission
+tOfTotal = 2000; % maximum time of flight of the complete mission
 
 
-%% Optimal mission finder
-
-
-% Coarse search
+%% Coarse mission search
 
 tof1 = 550;
 tof2 = 220;
@@ -52,7 +49,7 @@ missionCost = @(x) legAssembler(x(1), x(2), x(3)); % x = [Asteroid dep , Mars en
 [~, missionOptimalCoarse] = legAssembler(x(1), x(2), x(3));
 
 
-%% Secondary search
+%% Fine mission search
 
 shift = 10; % shift in days to provide a second fine search 
 

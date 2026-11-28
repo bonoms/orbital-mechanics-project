@@ -23,7 +23,7 @@ function [dv, mission] = legAssembler(tDep, tEnc, tArr)
 % sum it to the total, add also status in teh mission to evaluate
 % performace 
 
-% leg 1
+% Leg 1
 
 tOf1 = 86400*(tEnc-tDep);
 
@@ -34,7 +34,7 @@ mars = bodyState('mars', tEnc);
 
 dv1 = norm(leg1.v1 - asteroid.v) + norm(leg1.v2 - mars.v) ;
 
-% leg 2
+% Leg 2
 
 tOf2 = 86400*(tArr-tEnc);
 
@@ -44,11 +44,21 @@ venus = bodyState('venus', tArr);
 
 dv2 = norm(leg2.v1 - mars.v) + norm(leg2.v2 - venus.v);
 
-% total dv
+% Fly-by, function tbd
+
+vInfIn = leg1.v1 - mars.v;
+vInfOut = leg1.v2 - mars.v;
+
+muMars = astroConstants(14);
+
+
+
+
+% Total dv
 
 dv = dv1 + dv2;
 
-% mission parameters
+% Tission parameters
 
 mission.ok = ((leg1.error == 0) & (leg2.error == 0));
 
